@@ -287,8 +287,15 @@ namespace Attempt1
 
                 // 准备生成sql命令
                 string teacherTable = "TEACHERS";
-                string scoreTable = lookUpScoreTable(cur_blkStr);// "SCORE_1_1_1";
                 string scoreUpperBound = textBox_upperBound.Text;
+                string scoreTable = lookUpScoreTable(cur_blkStr);// "SCORE_1_1_1";
+                if (null == scoreTable)
+                {
+                    String msg = "lookUpScoreTable failed";
+                    MessageBox.Show(msg, "错误");
+                    listBox_log.Items.Add(msg);
+                    return;
+                }
 
                 // 生成sql命令
                 //string column_names = @"PAPERNO as 试卷号, USERID_5 as 给分小组长账号, TRUENAME as 给分小组长真实姓名, SCOREOF_5 as 给分小组长分数";
