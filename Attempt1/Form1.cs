@@ -56,26 +56,37 @@ namespace Attempt1
                 string teacherTable = "TEACHERS";
                 string scoreTable = "SCORE_1_1_1";
 
-                sqlCommBlkInfo.CommandText = "select * from " + scoreTable + "," + teacherTable + " t5 where userid_5 = t5.userid";
-                dataReaderBlkInfo = sqlCommBlkInfo.ExecuteReader();
+                string column_names = "PAPERNO, USERID_5, TRUENAME, SCOREOF_5";
+                string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5 " + 
+                                 "where userid_5 = t5.userid " +
+                                 "order by PAPERNO";
 
-                if (!dataReaderBlkInfo.HasRows)
-                {
-                    MessageBox.Show("无记录", "错误");
-                    return;
-                }
-                else
-                {
-                    while (dataReaderBlkInfo.Read())
-                    {
-                        string paperNo = dataReaderBlkInfo["PAPERNO"].ToString();
-                        string userId5 = dataReaderBlkInfo["USERID_5"].ToString();
-                        string trueName = dataReaderBlkInfo["TRUENAME"].ToString();
-                        string score5 = dataReaderBlkInfo["SCOREOF_5"].ToString(); // 虽然库中SCOREOF_5可能不是字符串类型，但是，这里我们调用.ToString()就可以了。
+                #region
+                //sqlCommBlkInfo.CommandText = "select * from " + scoreTable + "," + teacherTable + " t5 where userid_5 = t5.userid";
+                //dataReaderBlkInfo = sqlCommBlkInfo.ExecuteReader();
 
-                        Trace.WriteLine(paperNo + ", " + userId5 + ", " + trueName + ", " + score5, "Info");
-                    }
-                }
+                //if (!dataReaderBlkInfo.HasRows)
+                //{
+                //    MessageBox.Show("无记录", "错误");
+                //    return;
+                //}
+                //else
+                //{
+                //    while (dataReaderBlkInfo.Read())
+                //    {
+                //        string paperNo = dataReaderBlkInfo["PAPERNO"].ToString();
+                //        string userId5 = dataReaderBlkInfo["USERID_5"].ToString();
+                //        string trueName = dataReaderBlkInfo["TRUENAME"].ToString();
+                //        string score5 = dataReaderBlkInfo["SCOREOF_5"].ToString(); // 虽然库中SCOREOF_5可能不是字符串类型，但是，这里我们调用.ToString()就可以了。
+
+                //        Trace.WriteLine(paperNo + ", " + userId5 + ", " + trueName + ", " + score5, "Info");
+                //    }
+                //}
+                #endregion
+
+                ExportAlgorithm exportAlgorithm
+                        = new ExportAlgorithm(command, "test.xls", "XLS");
+                exportAlgorithm.Export();
             }
             catch (OracleException Oe)
             {
