@@ -91,18 +91,24 @@ namespace Attempt1
             string strDataBase = iniFileOperation.IniReadValue("dbParam", "Initial Catalog");
             string strUserName = iniFileOperation.IniReadValue("dbParam", "User ID");
             string strPassword = iniFileOperation.IniReadValue("dbParam", "Password");
-            Global.oracleConnectionString = @"Data Source=" + strDataBase +
-                @";User ID=" + strUserName + "; Password=" + strPassword;
-
-            //
+            //Global.oracleConnectionString = @"Data Source=" + strDataBase +
+            //    @";User ID=" + strUserName + ";Password=" + strPassword;      // 在这个项目中，目前看来，似乎不能用这样的连接字符串呢，非得用下面两个之一……难道是HOST的关系？
+            string strHOST = iniFileOperation.IniReadValue("dbParam", "HOST");
+            //Global.oracleConnectionString = @"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=" + strDataBase + ")));User Id=" + strUserName + ";Password=" + strPassword;
+            Global.oracleConnectionString = @"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=" + strHOST + ")(PORT=1521))(CONNECT_DATA=(SERVER = DEDICATED)(SERVICE_NAME=" + strDataBase + ")));User Id=" + strUserName + ";Password=" + strPassword;
             sqlConn = new OracleConnection(Global.oracleConnectionString);
             try
             {
-                sqlConn.Open();
+                if (sqlConn.State != ConnectionState.Open)
+                {
+                    sqlConn.Open();
+                }
             }
-            catch
+            catch (Exception e)
             {
-                MessageBox.Show("数据库打开失败！", "错误");
+                String message
+                    = String.Format("{0}", e.Message);
+                MessageBox.Show(message, "错误");
                 return;
             }
         }
@@ -254,7 +260,8 @@ namespace Attempt1
                 string scoreUpperBound = textBox_upperBound.Text;
 
                 // 生成sql命令
-                string column_names = "PAPERNO as 试卷号, USERID_5 as 给分小组长账号, TRUENAME as 给分小组长真实姓名, SCOREOF_5 as 给分小组长分数";
+                //string column_names = @"PAPERNO as 试卷号, USERID_5 as 给分小组长账号, TRUENAME as 给分小组长真实姓名, SCOREOF_5 as 给分小组长分数";
+                string column_names = "PAPERNO, USERID_5, TRUENAME, SCOREOF_5";
                 string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5" +
                                  " where userid_5 = t5.userid " +
                                  " and CHECKUSERID = -1" +
