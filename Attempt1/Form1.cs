@@ -13,42 +13,13 @@ namespace Attempt1
 {
     public partial class Form1 : Form
     {
-        public Form1()
-        {
-            InitializeComponent();
-        }
+        private OracleOperate oracleOperate;
+        private OracleConnection sqlConn;
 
-        private void Copy_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetText(listBox_log.Items[listBox_log.SelectedIndex].ToString());
-        }
+        private string cur_topLevelTeam;
+        private string cur_blkStr;
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            ContextMenuStrip listboxMenu = new ContextMenuStrip();
-            ToolStripMenuItem rightMenu = new ToolStripMenuItem("Copy");
-            rightMenu.Click += new EventHandler(Copy_Click);
-            listboxMenu.Items.AddRange(new ToolStripItem[] { rightMenu });
-            listBox_log.ContextMenuStrip = listboxMenu;
-
-            //
-
-            listBox_log.Items.Add("STARTED");
-
-            //
-            string teacherTable = "TEACHERS";
-            string scoreTable = "SCORE_1_1_1";
-
-            string column_names = "PAPERNO, USERID_5, TRUENAME, SCOREOF_5";
-            string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5 " +
-                             "where userid_5 = t5.userid " +
-                             "order by PAPERNO";
-
-            listBox_log.Items.Add(command);
-            
-        }
-
-        private void work(string cmd)
+        private void init()
         {
             IniFileOperation iniFileOperation = new IniFileOperation(Environment.CurrentDirectory + @"\wsyj.ini");
 
@@ -62,6 +33,178 @@ namespace Attempt1
             string strPassword = iniFileOperation.IniReadValue("dbParam", "Password");
             Global.oracleConnectionString = @"Data Source=" + strDataBase +
                 @";User ID=" + strUserName + "; Password=" + strPassword;
+
+            //
+            sqlConn = new OracleConnection(Global.oracleConnectionString);
+            try
+            {
+                sqlConn.Open();
+            }
+            catch
+            {
+                MessageBox.Show("数据库打开失败！", "错误");
+                return;
+            }
+        }
+
+        public Form1()
+        {
+            InitializeComponent();
+            ContextMenuStrip listboxMenu = new ContextMenuStrip();
+            ToolStripMenuItem rightMenu = new ToolStripMenuItem("Copy");
+            rightMenu.Click += new EventHandler(Copy_Click);
+            listboxMenu.Items.AddRange(new ToolStripItem[] { rightMenu });
+            listBox_log.ContextMenuStrip = listboxMenu;
+
+            //
+            listBox_log.Items.Add("STARTED");
+
+            // 以上为“界面级”操作
+            //
+
+            init();
+            oracleOperate = new OracleOperate(Global.oracleConnectionString, "Oracle");
+        }
+
+        private void Copy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(listBox_log.Items[listBox_log.SelectedIndex].ToString());
+        }
+
+        private void loadCourses()
+        {
+            string strSqlCmd = "";
+
+            strSqlCmd = "select * from dzinfo where checkflag='1' order by toplevelteam";
+            OracleDataReader dataReader = oracleOperate.SelectDataReader(strSqlCmd);
+
+            if (!dataReader.HasRows)
+            {
+                return;
+            }
+            comboBoxCourse.Items.Clear();
+            while (dataReader.Read())
+            {
+                comboBoxCourse.Items.Add(dataReader["courseno"].ToString() +
+                    "(" + dataReader["name"].ToString() + ")");
+            }
+            dataReader.Close();
+            dataReader.Dispose();
+
+            comboBoxCourse.SelectedIndex = 0;
+            //loadBlks_wrapper(); // 有了上面的“comboBoxCourse.SelectedIndex = 0;”，loadBlks_wrapper就会被调用啦~
+        }
+
+        private void loadBlks(string courseNo, ComboBox cb) 
+        {
+            string strBlkList = "";
+            
+            
+            //t//OracleCommand sqlCommTempTable = sqlConn.CreateCommand();
+            //t//OracleCommand sqlCommDelCreate = sqlConn.CreateCommand();
+            OracleCommand sqlCommQuery = sqlConn.CreateCommand();
+
+            // 根据科目名称获取所在大组负责的题块号，用循环从BlkInfo表中读取，解析后写入blk_Temp中
+            sqlCommQuery.CommandText = "select TopLevelTeam from DzInfo where courseno='" + courseNo + "'";
+            OracleDataReader dataReaderQuery = sqlCommQuery.ExecuteReader();
+
+            if (dataReaderQuery.HasRows)
+            {
+                while (dataReaderQuery.Read())
+                {
+                    cur_topLevelTeam = dataReaderQuery["ToplevelTeam"].ToString();   // 获取大组号
+                }
+
+                sqlCommQuery.CommandText = "select distinct blkname from userinfo " +
+                    "where role=4 and toplevelteam=" + cur_topLevelTeam;
+                dataReaderQuery = sqlCommQuery.ExecuteReader();
+                while (dataReaderQuery.Read())
+                {
+                    strBlkList = dataReaderQuery["blkname"].ToString();
+                }
+                strBlkList = strBlkList.Substring(strBlkList.IndexOf("}") + 2);
+                // 如果最后有一个','，则需要先删除
+                //if (strBlk[strBlk.Length - 1] == ',')
+                //{
+                //    strBlk = strBlk.Substring(0, strBlk.Length - 1);
+                //}
+
+                // 只有一个题块号
+                string[] blk_list__array = strBlkList.Split(',');
+
+                cb.Items.Clear();
+                foreach (string item in blk_list__array) {
+                    if (0 == item.Trim().Length)
+                    {
+                        Trace.WriteLine("Got an item trimmed to empty string. This might be a normal phenomenon. Going to skip it.");
+                        continue;
+                    }
+                    cb.Items.Add(item);
+                }
+                cb.SelectedIndex = 0;
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            loadCourses();
+        }
+
+        private string lookUpScoreTable(string strBlk)
+        {
+            OracleCommand sqlCommQuery = sqlConn.CreateCommand();
+
+
+            sqlCommQuery.CommandText = "select blkNo,checkrule,blktblname,scoretblname,revaluateRule, MAXLOWSCR, DEFINERSN from BlkInfo " +
+                "where blkno=" + strBlk + " and questionno=" + cur_topLevelTeam;
+            OracleDataReader dataReaderQuery = sqlCommQuery.ExecuteReader();
+
+            if (!dataReaderQuery.HasRows)
+            {
+                MessageBox.Show("题块信息表中没有记录，无法进行评分轨迹导出！", "错误");
+                return null;
+            }
+
+            String strScoreTblName = "";
+            int cnt = 0;
+            while (dataReaderQuery.Read())
+            {
+                //strBlkTblName = dataReaderBlkInfo["Blktblname"].ToString();
+                strScoreTblName = dataReaderQuery["scoretblname"].ToString();
+                Trace.WriteLine(strScoreTblName);
+                cnt++;
+            }
+            Debug.Assert(1 == cnt);
+
+            return strScoreTblName;
+        }
+
+        private void export_excel()
+        {
+            // 准备生成sql命令
+            string teacherTable = "TEACHERS";
+            string scoreTable = lookUpScoreTable(cur_blkStr);// "SCORE_1_1_1";
+            string scoreUpperBound = textBox_upperBound.Text;
+
+            // 生成sql命令
+            string column_names = "PAPERNO, USERID_5, TRUENAME, SCOREOF_5";
+            string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5" +
+                             " where userid_5 = t5.userid " +
+                             " and CHECKUSERID = -1" +
+                             " and (SCOREOF_5 >= 0 and SCOREOF_5 <= " + scoreUpperBound + ")" +
+                             " and STEPFLAG = 100" +
+                             " and STORETYPE = 58" +
+                             " order by PAPERNO";
+
+            listBox_log.Items.Add(command);
+
+            // 导出excel文件
+            work(command);
+            listBox_log.Items.Add("导出完成");
+        }
+
+        private void work(string cmd)
+        {
 
             OracleConnection sqlConn = new OracleConnection(Global.oracleConnectionString);
             OracleCommand sqlCommBlkInfo = sqlConn.CreateCommand();
@@ -115,6 +258,35 @@ namespace Attempt1
             {
                 sqlConn.Close();
             }
+        }
+
+        private void comboBoxCourse_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Trace.WriteLine(comboBoxCourse.SelectedValue);
+            Trace.WriteLine(comboBoxCourse.Text);
+
+            loadBlks_wrapper();
+        }
+
+        private void loadBlks_wrapper()
+        {
+            string strCourse = comboBoxCourse.Text;
+            int left_parenthesis = strCourse.IndexOf("(");
+            //int right_parenthesis = strCourse.IndexOf(")");
+            string strCourseNo = strCourse.Substring(0, left_parenthesis);
+
+            loadBlks(strCourseNo, comboBoxBlks);
+        }
+        private void comboBoxBlks_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string strBlk = comboBoxBlks.Text;
+
+            cur_blkStr = strBlk;
+        }
+
+        private void button_export_Click(object sender, EventArgs e)
+        {
+            export_excel();
         }
     }
 }

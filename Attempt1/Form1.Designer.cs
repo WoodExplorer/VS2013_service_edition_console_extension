@@ -29,34 +29,110 @@
         private void InitializeComponent()
         {
             this.listBox_log = new System.Windows.Forms.ListBox();
+            this.comboBoxCourse = new System.Windows.Forms.ComboBox();
+            this.comboBoxBlks = new System.Windows.Forms.ComboBox();
+            this.button_export = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox_upperBound = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // listBox_log
             // 
+            this.listBox_log.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.listBox_log.FormattingEnabled = true;
             this.listBox_log.HorizontalScrollbar = true;
             this.listBox_log.ItemHeight = 12;
-            this.listBox_log.Location = new System.Drawing.Point(12, 13);
+            this.listBox_log.Location = new System.Drawing.Point(0, 185);
             this.listBox_log.Name = "listBox_log";
-            this.listBox_log.Size = new System.Drawing.Size(260, 232);
+            this.listBox_log.Size = new System.Drawing.Size(284, 160);
             this.listBox_log.TabIndex = 0;
+            // 
+            // comboBoxCourse
+            // 
+            this.comboBoxCourse.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxCourse.FormattingEnabled = true;
+            this.comboBoxCourse.Location = new System.Drawing.Point(61, 12);
+            this.comboBoxCourse.Name = "comboBoxCourse";
+            this.comboBoxCourse.Size = new System.Drawing.Size(121, 20);
+            this.comboBoxCourse.TabIndex = 1;
+            this.comboBoxCourse.SelectedIndexChanged += new System.EventHandler(this.comboBoxCourse_SelectedIndexChanged);
+            // 
+            // comboBoxBlks
+            // 
+            this.comboBoxBlks.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxBlks.FormattingEnabled = true;
+            this.comboBoxBlks.Location = new System.Drawing.Point(61, 38);
+            this.comboBoxBlks.Name = "comboBoxBlks";
+            this.comboBoxBlks.Size = new System.Drawing.Size(121, 20);
+            this.comboBoxBlks.TabIndex = 2;
+            this.comboBoxBlks.SelectedIndexChanged += new System.EventHandler(this.comboBoxBlks_SelectedIndexChanged);
+            // 
+            // button_export
+            // 
+            this.button_export.Location = new System.Drawing.Point(61, 90);
+            this.button_export.Name = "button_export";
+            this.button_export.Size = new System.Drawing.Size(75, 23);
+            this.button_export.TabIndex = 3;
+            this.button_export.Text = "导出excel";
+            this.button_export.UseVisualStyleBackColor = true;
+            this.button_export.Click += new System.EventHandler(this.button_export_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 15);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 12);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "科目";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 41);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(29, 12);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "题块";
+            // 
+            // textBox_upperBound
+            // 
+            this.textBox_upperBound.Location = new System.Drawing.Point(61, 64);
+            this.textBox_upperBound.Name = "textBox_upperBound";
+            this.textBox_upperBound.Size = new System.Drawing.Size(121, 21);
+            this.textBox_upperBound.TabIndex = 6;
+            this.textBox_upperBound.Text = "3";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(284, 345);
+            this.Controls.Add(this.textBox_upperBound);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.button_export);
+            this.Controls.Add(this.comboBoxBlks);
+            this.Controls.Add(this.comboBoxCourse);
             this.Controls.Add(this.listBox_log);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.ListBox listBox_log;
+        private System.Windows.Forms.ComboBox comboBoxCourse;
+        private System.Windows.Forms.ComboBox comboBoxBlks;
+        private System.Windows.Forms.Button button_export;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox_upperBound;
     }
 }
 
