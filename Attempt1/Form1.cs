@@ -53,7 +53,10 @@ namespace Attempt1
             {
                 sqlConn.Open();
 
-                sqlCommBlkInfo.CommandText = "select * from DZINFO";
+                string teacherTable = "TEACHERS";
+                string scoreTable = "SCORE_1_1_1";
+
+                sqlCommBlkInfo.CommandText = "select * from " + scoreTable + "," + teacherTable + " t5 where userid_5 = t5.userid";
                 dataReaderBlkInfo = sqlCommBlkInfo.ExecuteReader();
 
                 if (!dataReaderBlkInfo.HasRows)
@@ -65,9 +68,12 @@ namespace Attempt1
                 {
                     while (dataReaderBlkInfo.Read())
                     {
-                        string sName = dataReaderBlkInfo["NAME"].ToString();
+                        string paperNo = dataReaderBlkInfo["PAPERNO"].ToString();
+                        string userId5 = dataReaderBlkInfo["USERID_5"].ToString();
+                        string trueName = dataReaderBlkInfo["TRUENAME"].ToString();
+                        string score5 = dataReaderBlkInfo["SCOREOF_5"].ToString(); // 虽然库中SCOREOF_5可能不是字符串类型，但是，这里我们调用.ToString()就可以了。
 
-                        Trace.WriteLine(sName, "Info");
+                        Trace.WriteLine(paperNo + ", " + userId5 + ", " + trueName + ", " + score5, "Info");
                     }
                 }
             }
