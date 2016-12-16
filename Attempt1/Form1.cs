@@ -19,6 +19,66 @@ namespace Attempt1
         private string cur_topLevelTeam;
         private string cur_blkStr;
 
+        #region “界面级”函数们
+        public Form1()
+        {
+            InitializeComponent();
+            ContextMenuStrip listboxMenu = new ContextMenuStrip();
+            ToolStripMenuItem rightMenu = new ToolStripMenuItem("Copy");
+            rightMenu.Click += new EventHandler(Copy_Click);
+            listboxMenu.Items.AddRange(new ToolStripItem[] { rightMenu });
+            listBox_log.ContextMenuStrip = listboxMenu;
+
+            //
+            //listBox_log.Items.Add("STARTED");
+
+            // 以上为“界面级”操作
+            //
+            init();
+            oracleOperate = new OracleOperate(Global.oracleConnectionString, "Oracle");
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            loadCourses();
+        }
+        private void comboBoxCourse_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Trace.WriteLine(comboBoxCourse.SelectedValue);
+            Trace.WriteLine(comboBoxCourse.Text);
+
+            loadBlks_wrapper();
+        }
+
+        private void comboBoxBlks_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string strBlk = comboBoxBlks.Text;
+
+            cur_blkStr = strBlk;
+        }
+
+        private void button_export_Click(object sender, EventArgs e)
+        {
+            export_excel();
+        }
+
+        /// <summary>
+        /// ListBox中的项目的右击菜单中的“copy”选项的处理函数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Copy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(listBox_log.Items[listBox_log.SelectedIndex].ToString());
+        }
+        
+        #endregion
+
+        /// <summary>
+        /// ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// </summary>
+
+        #region “业务级”函数们
         private void init()
         {
             IniFileOperation iniFileOperation = new IniFileOperation(Environment.CurrentDirectory + @"\wsyj.ini");
@@ -47,29 +107,6 @@ namespace Attempt1
             }
         }
 
-        public Form1()
-        {
-            InitializeComponent();
-            ContextMenuStrip listboxMenu = new ContextMenuStrip();
-            ToolStripMenuItem rightMenu = new ToolStripMenuItem("Copy");
-            rightMenu.Click += new EventHandler(Copy_Click);
-            listboxMenu.Items.AddRange(new ToolStripItem[] { rightMenu });
-            listBox_log.ContextMenuStrip = listboxMenu;
-
-            //
-            //listBox_log.Items.Add("STARTED");
-
-            // 以上为“界面级”操作
-            //
-            init();
-            oracleOperate = new OracleOperate(Global.oracleConnectionString, "Oracle");
-        }
-
-        private void Copy_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetText(listBox_log.Items[listBox_log.SelectedIndex].ToString());
-        }
-
         private void loadCourses()
         {
             string strSqlCmd = "";
@@ -93,7 +130,15 @@ namespace Attempt1
             comboBoxCourse.SelectedIndex = 0;
             //loadBlks_wrapper(); // 有了上面的“comboBoxCourse.SelectedIndex = 0;”，loadBlks_wrapper就会被调用啦~
         }
+        private void loadBlks_wrapper()
+        {
+            string strCourse = comboBoxCourse.Text;
+            int left_parenthesis = strCourse.IndexOf("(");
+            //int right_parenthesis = strCourse.IndexOf(")");
+            string strCourseNo = strCourse.Substring(0, left_parenthesis);
 
+            loadBlks(strCourseNo, comboBoxBlks);
+        }
         private void loadBlks(string courseNo, ComboBox cb) 
         {
             string strBlkList = "";
@@ -141,11 +186,6 @@ namespace Attempt1
                 }
                 cb.SelectedIndex = 0;
             }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            loadCourses();
         }
 
         private string lookUpScoreTable(string strBlk)
@@ -211,12 +251,12 @@ namespace Attempt1
                 listBox_log.Items.Add(command);
 
                 // 导出excel文件
-                work(strFileName, command);
+                export_excel_impl(strFileName, command);
                 listBox_log.Items.Add("导出完成");
             }
         }
 
-        private void work(string file_name, string cmd)
+        private void export_excel_impl(string file_name, string cmd)
         {
 
             OracleConnection sqlConn = new OracleConnection(Global.oracleConnectionString);
@@ -272,34 +312,6 @@ namespace Attempt1
                 sqlConn.Close();
             }
         }
-
-        private void comboBoxCourse_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Trace.WriteLine(comboBoxCourse.SelectedValue);
-            Trace.WriteLine(comboBoxCourse.Text);
-
-            loadBlks_wrapper();
-        }
-
-        private void loadBlks_wrapper()
-        {
-            string strCourse = comboBoxCourse.Text;
-            int left_parenthesis = strCourse.IndexOf("(");
-            //int right_parenthesis = strCourse.IndexOf(")");
-            string strCourseNo = strCourse.Substring(0, left_parenthesis);
-
-            loadBlks(strCourseNo, comboBoxBlks);
-        }
-        private void comboBoxBlks_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string strBlk = comboBoxBlks.Text;
-
-            cur_blkStr = strBlk;
-        }
-
-        private void button_export_Click(object sender, EventArgs e)
-        {
-            export_excel();
-        }
+        #endregion
     }
 }
