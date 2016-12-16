@@ -219,6 +219,21 @@ namespace Attempt1
 
         private void export_excel()
         {
+            #region “表单”检查/参数检查
+            try
+            {
+                Convert.ToDouble(textBox_upperBound.Text);
+            }
+            catch (Exception e)
+            {
+                String message
+                    = String.Format("Failed to export data.[{0}]", e.Message);
+                MessageBox.Show(message, "参数检查");
+                return;
+            }
+            #endregion
+            //
+
             string strFileName = "tmp.xls";
             //string fileType = "";
             
@@ -251,67 +266,14 @@ namespace Attempt1
                 listBox_log.Items.Add(command);
 
                 // 导出excel文件
-                export_excel_impl(strFileName, command);
+                ExportAlgorithm exportAlgorithm
+                    = new ExportAlgorithm(command, strFileName, "XLS");
+                exportAlgorithm.Export();
+
                 listBox_log.Items.Add("导出完成");
             }
         }
 
-        private void export_excel_impl(string file_name, string cmd)
-        {
-
-            OracleConnection sqlConn = new OracleConnection(Global.oracleConnectionString);
-            OracleCommand sqlCommBlkInfo = sqlConn.CreateCommand();
-            OracleCommand sqlCommUserInfo = sqlConn.CreateCommand();
-            OracleCommand sqlCommQuery = sqlConn.CreateCommand();
-            OracleCommand sqlCommProcTempScore = sqlConn.CreateCommand();
-            OracleCommand sqlCommTempScore = sqlConn.CreateCommand();
-            OracleDataReader dataReaderBlkInfo, dataReaderQuery;
-            OracleDataAdapter dataAdapter = new OracleDataAdapter();
-            DataSet dataSetTmpScore = new DataSet();
-
-
-            try
-            {
-                sqlConn.Open();
-
-                
-
-                #region
-                //sqlCommBlkInfo.CommandText = "select * from " + scoreTable + "," + teacherTable + " t5 where userid_5 = t5.userid";
-                //dataReaderBlkInfo = sqlCommBlkInfo.ExecuteReader();
-
-                //if (!dataReaderBlkInfo.HasRows)
-                //{
-                //    MessageBox.Show("无记录", "错误");
-                //    return;
-                //}
-                //else
-                //{
-                //    while (dataReaderBlkInfo.Read())
-                //    {
-                //        string paperNo = dataReaderBlkInfo["PAPERNO"].ToString();
-                //        string userId5 = dataReaderBlkInfo["USERID_5"].ToString();
-                //        string trueName = dataReaderBlkInfo["TRUENAME"].ToString();
-                //        string score5 = dataReaderBlkInfo["SCOREOF_5"].ToString(); // 虽然库中SCOREOF_5可能不是字符串类型，但是，这里我们调用.ToString()就可以了。
-
-                //        Trace.WriteLine(paperNo + ", " + userId5 + ", " + trueName + ", " + score5, "Info");
-                //    }
-                //}
-                #endregion
-
-                ExportAlgorithm exportAlgorithm
-                        = new ExportAlgorithm(cmd, file_name, "XLS");
-                exportAlgorithm.Export();
-            }
-            catch (OracleException Oe)
-            {
-                throw Oe;
-            }
-            finally
-            {
-                sqlConn.Close();
-            }
-        }
         #endregion
     }
 }
