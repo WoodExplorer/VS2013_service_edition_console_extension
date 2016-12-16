@@ -124,16 +124,29 @@ namespace Attempt1
                 return;
             }
             comboBoxCourse.Items.Clear();
+
+            int cnt = 0;
             while (dataReader.Read())
             {
                 comboBoxCourse.Items.Add(dataReader["courseno"].ToString() +
                     "(" + dataReader["name"].ToString() + ")");
+                cnt++;
             }
             dataReader.Close();
             dataReader.Dispose();
 
-            comboBoxCourse.SelectedIndex = 0;
-            //loadBlks_wrapper(); // 有了上面的“comboBoxCourse.SelectedIndex = 0;”，loadBlks_wrapper就会被调用啦~
+            if (0 == cnt)
+            {
+                string msg = "没有科目";
+                listBox_log.Items.Add(msg);
+                MessageBox.Show(msg, "错误");
+            }
+            else
+            {
+                comboBoxCourse.SelectedIndex = 0;
+                //loadBlks_wrapper(); // 有了上面的“comboBoxCourse.SelectedIndex = 0;”，loadBlks_wrapper就会被调用啦~
+            }
+
         }
         private void loadBlks_wrapper()
         {
@@ -189,6 +202,12 @@ namespace Attempt1
                     cb.Items.Add(item);
                 }
                 cb.SelectedIndex = 0;
+            }
+            else
+            {
+                string msg = "当前科目没有题块";
+                listBox_log.Items.Add(msg);
+                MessageBox.Show(msg, "错误");
             }
         }
 
