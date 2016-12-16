@@ -57,11 +57,10 @@ namespace Attempt1
             listBox_log.ContextMenuStrip = listboxMenu;
 
             //
-            listBox_log.Items.Add("STARTED");
+            //listBox_log.Items.Add("STARTED");
 
             // 以上为“界面级”操作
             //
-
             init();
             oracleOperate = new OracleOperate(Global.oracleConnectionString, "Oracle");
         }
@@ -129,7 +128,6 @@ namespace Attempt1
                 //    strBlk = strBlk.Substring(0, strBlk.Length - 1);
                 //}
 
-                // 只有一个题块号
                 string[] blk_list__array = strBlkList.Split(',');
 
                 cb.Items.Clear();
@@ -181,29 +179,44 @@ namespace Attempt1
 
         private void export_excel()
         {
-            // 准备生成sql命令
-            string teacherTable = "TEACHERS";
-            string scoreTable = lookUpScoreTable(cur_blkStr);// "SCORE_1_1_1";
-            string scoreUpperBound = textBox_upperBound.Text;
+            string strFileName = "tmp.xls";
+            //string fileType = "";
+            
+            System.Windows.Forms.SaveFileDialog saveDlg = new System.Windows.Forms.SaveFileDialog();
+            saveDlg.Filter = "excel files (*.xls)|*.xls";
+            //saveDlg.Filter = "text files (*.txt)|*.txt|word files (*.doc)|*.doc|excel files (*.xls)|*.xls|dbf files (*.dbf)|*.dbf";
+            saveDlg.RestoreDirectory = true;
+            
+            if (saveDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                strFileName = saveDlg.FileName.ToString();
 
-            // 生成sql命令
-            string column_names = "PAPERNO, USERID_5, TRUENAME, SCOREOF_5";
-            string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5" +
-                             " where userid_5 = t5.userid " +
-                             " and CHECKUSERID = -1" +
-                             " and (SCOREOF_5 >= 0 and SCOREOF_5 <= " + scoreUpperBound + ")" +
-                             " and STEPFLAG = 100" +
-                             " and STORETYPE = 58" +
-                             " order by PAPERNO";
+                listBox_log.Items.Add("开始导出");
 
-            listBox_log.Items.Add(command);
+                // 准备生成sql命令
+                string teacherTable = "TEACHERS";
+                string scoreTable = lookUpScoreTable(cur_blkStr);// "SCORE_1_1_1";
+                string scoreUpperBound = textBox_upperBound.Text;
 
-            // 导出excel文件
-            work(command);
-            listBox_log.Items.Add("导出完成");
+                // 生成sql命令
+                string column_names = "PAPERNO as 试卷号, USERID_5 as 给分小组长账号, TRUENAME as 给分小组长真实姓名, SCOREOF_5 as 给分小组长分数";
+                string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5" +
+                                 " where userid_5 = t5.userid " +
+                                 " and CHECKUSERID = -1" +
+                                 " and (SCOREOF_5 >= 0 and SCOREOF_5 <= " + scoreUpperBound + ")" +
+                                 " and STEPFLAG = 100" +
+                                 " and STORETYPE = 58" +
+                                 " order by PAPERNO";
+
+                listBox_log.Items.Add(command);
+
+                // 导出excel文件
+                work(strFileName, command);
+                listBox_log.Items.Add("导出完成");
+            }
         }
 
-        private void work(string cmd)
+        private void work(string file_name, string cmd)
         {
 
             OracleConnection sqlConn = new OracleConnection(Global.oracleConnectionString);
@@ -247,7 +260,7 @@ namespace Attempt1
                 #endregion
 
                 ExportAlgorithm exportAlgorithm
-                        = new ExportAlgorithm(cmd, "test.xls", "XLS");
+                        = new ExportAlgorithm(cmd, file_name, "XLS");
                 exportAlgorithm.Export();
             }
             catch (OracleException Oe)

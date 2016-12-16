@@ -35,6 +35,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox_upperBound = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // listBox_log
@@ -43,16 +44,16 @@
             this.listBox_log.FormattingEnabled = true;
             this.listBox_log.HorizontalScrollbar = true;
             this.listBox_log.ItemHeight = 12;
-            this.listBox_log.Location = new System.Drawing.Point(0, 185);
+            this.listBox_log.Location = new System.Drawing.Point(0, 137);
             this.listBox_log.Name = "listBox_log";
-            this.listBox_log.Size = new System.Drawing.Size(284, 160);
+            this.listBox_log.Size = new System.Drawing.Size(313, 208);
             this.listBox_log.TabIndex = 0;
             // 
             // comboBoxCourse
             // 
             this.comboBoxCourse.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCourse.FormattingEnabled = true;
-            this.comboBoxCourse.Location = new System.Drawing.Point(61, 12);
+            this.comboBoxCourse.Location = new System.Drawing.Point(91, 12);
             this.comboBoxCourse.Name = "comboBoxCourse";
             this.comboBoxCourse.Size = new System.Drawing.Size(121, 20);
             this.comboBoxCourse.TabIndex = 1;
@@ -62,7 +63,7 @@
             // 
             this.comboBoxBlks.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxBlks.FormattingEnabled = true;
-            this.comboBoxBlks.Location = new System.Drawing.Point(61, 38);
+            this.comboBoxBlks.Location = new System.Drawing.Point(91, 38);
             this.comboBoxBlks.Name = "comboBoxBlks";
             this.comboBoxBlks.Size = new System.Drawing.Size(121, 20);
             this.comboBoxBlks.TabIndex = 2;
@@ -70,7 +71,7 @@
             // 
             // button_export
             // 
-            this.button_export.Location = new System.Drawing.Point(61, 90);
+            this.button_export.Location = new System.Drawing.Point(91, 91);
             this.button_export.Name = "button_export";
             this.button_export.Size = new System.Drawing.Size(75, 23);
             this.button_export.TabIndex = 3;
@@ -98,17 +99,27 @@
             // 
             // textBox_upperBound
             // 
-            this.textBox_upperBound.Location = new System.Drawing.Point(61, 64);
+            this.textBox_upperBound.Location = new System.Drawing.Point(91, 64);
             this.textBox_upperBound.Name = "textBox_upperBound";
             this.textBox_upperBound.Size = new System.Drawing.Size(121, 21);
             this.textBox_upperBound.TabIndex = 6;
             this.textBox_upperBound.Text = "3";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 64);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(65, 12);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "<=分数上界";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 345);
+            this.ClientSize = new System.Drawing.Size(313, 345);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.textBox_upperBound);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -117,7 +128,7 @@
             this.Controls.Add(this.comboBoxCourse);
             this.Controls.Add(this.listBox_log);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "低分仲裁卷信息导出";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -133,6 +144,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox_upperBound;
+        private System.Windows.Forms.Label label3;
     }
 }
 
