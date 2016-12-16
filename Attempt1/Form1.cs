@@ -117,7 +117,7 @@ namespace Attempt1
         {
             string strSqlCmd = "";
 
-            strSqlCmd = "select * from dzinfo where checkflag='1' order by toplevelteam";
+            strSqlCmd = "select * from dzinfo order by toplevelteam";
             OracleDataReader dataReader = oracleOperate.SelectDataReader(strSqlCmd);
 
             if (!dataReader.HasRows)
