@@ -298,6 +298,8 @@ namespace Attempt1
                 }
 
                 // 生成sql命令
+                //
+                // 注意：不要给列名取“中文别名”以达到导出的excel含有“解释性表头”的效果，以避免什么invalid character的问题，可能也与“非得用复杂形式的连接字符串”或者“32位-64位平台的oracle连接库等的差异”有关
                 //string column_names = @"PAPERNO as 试卷号, USERID_5 as 给分小组长账号, TRUENAME as 给分小组长真实姓名, SCOREOF_5 as 给分小组长分数";
                 string column_names = "PAPERNO, USERID_5, TRUENAME, SCOREOF_5";
                 string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5" +
