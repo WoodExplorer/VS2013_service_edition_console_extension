@@ -18,12 +18,37 @@ namespace Attempt1
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Copy_Click(object sender, EventArgs e)
         {
-            work();
+            Clipboard.SetText(listBox_log.Items[listBox_log.SelectedIndex].ToString());
         }
 
-        private void work()
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            ContextMenuStrip listboxMenu = new ContextMenuStrip();
+            ToolStripMenuItem rightMenu = new ToolStripMenuItem("Copy");
+            rightMenu.Click += new EventHandler(Copy_Click);
+            listboxMenu.Items.AddRange(new ToolStripItem[] { rightMenu });
+            listBox_log.ContextMenuStrip = listboxMenu;
+
+            //
+
+            listBox_log.Items.Add("STARTED");
+
+            //
+            string teacherTable = "TEACHERS";
+            string scoreTable = "SCORE_1_1_1";
+
+            string column_names = "PAPERNO, USERID_5, TRUENAME, SCOREOF_5";
+            string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5 " +
+                             "where userid_5 = t5.userid " +
+                             "order by PAPERNO";
+
+            listBox_log.Items.Add(command);
+            
+        }
+
+        private void work(string cmd)
         {
             IniFileOperation iniFileOperation = new IniFileOperation(Environment.CurrentDirectory + @"\wsyj.ini");
 
@@ -53,13 +78,7 @@ namespace Attempt1
             {
                 sqlConn.Open();
 
-                string teacherTable = "TEACHERS";
-                string scoreTable = "SCORE_1_1_1";
-
-                string column_names = "PAPERNO, USERID_5, TRUENAME, SCOREOF_5";
-                string command = "select " + column_names + " from " + scoreTable + "," + teacherTable + " t5 " + 
-                                 "where userid_5 = t5.userid " +
-                                 "order by PAPERNO";
+                
 
                 #region
                 //sqlCommBlkInfo.CommandText = "select * from " + scoreTable + "," + teacherTable + " t5 where userid_5 = t5.userid";
@@ -85,7 +104,7 @@ namespace Attempt1
                 #endregion
 
                 ExportAlgorithm exportAlgorithm
-                        = new ExportAlgorithm(command, "test.xls", "XLS");
+                        = new ExportAlgorithm(cmd, "test.xls", "XLS");
                 exportAlgorithm.Export();
             }
             catch (OracleException Oe)
