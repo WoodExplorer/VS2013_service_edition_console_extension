@@ -106,8 +106,7 @@ namespace Attempt1
             }
             catch (Exception e)
             {
-                String message
-                    = String.Format("{0}", e.Message);
+                String message = String.Format("{0}", e.Message);
                 MessageBox.Show(message, "错误");
                 return;
             }
@@ -148,7 +147,6 @@ namespace Attempt1
         private void loadBlks(string courseNo, ComboBox cb) 
         {
             string strBlkList = "";
-            
             
             //t//OracleCommand sqlCommTempTable = sqlConn.CreateCommand();
             //t//OracleCommand sqlCommDelCreate = sqlConn.CreateCommand();
@@ -198,10 +196,19 @@ namespace Attempt1
         {
             OracleCommand sqlCommQuery = sqlConn.CreateCommand();
 
-
             sqlCommQuery.CommandText = "select blkNo,checkrule,blktblname,scoretblname,revaluateRule, MAXLOWSCR, DEFINERSN from BlkInfo " +
                 "where blkno=" + strBlk + " and questionno=" + cur_topLevelTeam;
-            OracleDataReader dataReaderQuery = sqlCommQuery.ExecuteReader();
+            OracleDataReader dataReaderQuery = null;
+
+            try
+            {
+                dataReaderQuery = sqlCommQuery.ExecuteReader();
+            }
+            catch (Exception e)
+            {
+                String message = String.Format("{0}", e.Message);
+                MessageBox.Show(message, "错误");
+            }
 
             if (!dataReaderQuery.HasRows)
             {
@@ -218,8 +225,14 @@ namespace Attempt1
                 Trace.WriteLine(strScoreTblName);
                 cnt++;
             }
-            Debug.Assert(1 == cnt);
-
+            //Debug.Assert(1 == cnt);
+            if (1 != cnt)
+            {
+                String message = String.Format("topLevelTeam [{0}]中blkno为[{1}]的记录数不为1，而为{2}", cur_topLevelTeam, strBlk, cnt);
+                MessageBox.Show("题块信息表中没有记录，无法进行评分轨迹导出！", "错误");
+                return null;
+            }
+            
             return strScoreTblName;
         }
 
@@ -232,8 +245,7 @@ namespace Attempt1
             }
             catch (Exception e)
             {
-                String message
-                    = String.Format("Failed to export data.[{0}]", e.Message);
+                String message = String.Format("Failed to export data.[{0}]", e.Message);
                 MessageBox.Show(message, "参数检查");
                 return;
             }
