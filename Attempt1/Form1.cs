@@ -215,7 +215,7 @@ namespace Attempt1
         {
             OracleCommand sqlCommQuery = sqlConn.CreateCommand();
 
-            sqlCommQuery.CommandText = "select blkNo,checkrule,blktblname,scoretblname,revaluateRule, MAXLOWSCR, DEFINERSN from BlkInfo " +
+            sqlCommQuery.CommandText = "select scoretblname from BlkInfo " +
                 "where blkno=" + strBlk + " and questionno=" + cur_topLevelTeam;
             OracleDataReader dataReaderQuery = null;
 
