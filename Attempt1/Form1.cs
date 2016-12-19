@@ -37,7 +37,6 @@ namespace Attempt1
             init();
             oracleOperate = new OracleOperate(Global.oracleConnectionString, "Oracle");
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             loadCourses();
